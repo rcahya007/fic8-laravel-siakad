@@ -11,6 +11,11 @@ class Subject extends Model
     protected $fillable = [
         'title',
         'lecturer_id',
+        'semester',
+        'academic_year',
+        'sks',
+        'code',
+        'description'
     ];
 
     public function lecturer()
