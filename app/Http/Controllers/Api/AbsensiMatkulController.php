@@ -14,7 +14,10 @@ class AbsensiMatkulController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $absensiMatkul = AbsensiMatkul::where('student_id', '=', $user->id)->paginate(10);
+
+        $absensiMatkul = AbsensiMatkul::where('student_id', '=', $user->id)
+            ->orderBy('id', 'desc')
+            ->paginate(10);
 
         return $absensiMatkul;
     }
@@ -25,7 +28,7 @@ class AbsensiMatkulController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'schedule_id' => 'required|exists:schedules,id',
+            'schedule_id' => 'required',
             'kode_absensi' => 'required',
             'tahun_akademik' => 'required',
             'semester' => 'required',
@@ -34,6 +37,15 @@ class AbsensiMatkulController extends Controller
             'longtitude' => 'required',
         ]);
 
+        $user = $request->user();
+
+        // dd($user->id);
+        $request->merge([
+            'student_id' => $user->id,
+            'crea ted_by' => $user->id,
+            'updated_by' => $user->id,
+        ]);
+        // dd($request->all());
         $absensiMatkul = AbsensiMatkul::create($request->all());
         return $absensiMatkul;
     }
@@ -51,7 +63,13 @@ class AbsensiMatkulController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $absensiMatkul = AbsensiMatkul::findOrFail($id);
+        $user = $request->user();
+        $request->merge([
+            'updated_by' => $user->id,
+        ]);
+        $absensiMatkul->update($request->all());
+        return $absensiMatkul;
     }
 
     /**
